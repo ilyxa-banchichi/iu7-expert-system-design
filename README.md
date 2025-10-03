@@ -1,1 +1,2 @@
-# iu7-expert-system-design
+# Проектирование экспертных систем (Expert System Design)
+ 3 семестр ИУ7 магистратура
