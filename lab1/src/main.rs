@@ -16,7 +16,7 @@ fn main() {
         Edge::new(0, 4, 11),
         Edge::new(0, 5, 13),
 
-        // Edge::new(1, 2, 12),
+        Edge::new(1, 2, 12),
 
         Edge::new(2, 4, 14),
         Edge::new(4, 6, 15),
