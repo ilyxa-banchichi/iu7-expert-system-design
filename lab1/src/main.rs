@@ -10,13 +10,12 @@ use crate::export_graph::export_to_dot;
 
 fn main() {
     let nodes: Vec<Node> = (0..9).map(Node::new).collect();
-
     let edge_list = vec![
         Edge::new(0, 1, 10),
         Edge::new(0, 4, 11),
         Edge::new(0, 5, 13),
 
-        Edge::new(1, 2, 12),
+        // Edge::new(1, 2, 12),
 
         Edge::new(2, 4, 14),
         Edge::new(4, 6, 15),
@@ -42,8 +41,8 @@ fn main() {
 
     let mut graph_dfs = GraphDFS::new(edge_list.clone());
     let dfs_path = graph_dfs.dfs(start, goal);
-    println!("Путь в глубину {:?}", dfs_path);
 
+    println!("Путь в глубину {:?}", dfs_path);
     export_to_dot(
         "dfs.dot",
         &nodes,
@@ -53,22 +52,22 @@ fn main() {
         Some(&dfs_path),
     ).unwrap();
 
-    // let mut nodes_bfs: Vec<Node> = (0..7).map(Node::new).collect();
-    // let mut edge_list_bfs = edge_list.clone();
-    // for e in &mut edge_list_bfs {
-    //     e.mark = 0;
-    // }
+    // reset edges
+    let mut edge_list_bfs = edge_list.clone();
+    for e in &mut edge_list_bfs {
+        e.mark = 0;
+    }
 
-    // let mut graph_bfs = GraphBFS::new(edge_list_bfs);
-    // let bfs_path = graph_bfs.bfs(&mut nodes_bfs, start, goal);
-    // println!("Путь в ширину {:?}", bfs_path);
+    let mut graph_bfs = GraphBFS::new(edge_list_bfs, 9);
+    let bfs_path = graph_bfs.bfs(start, goal);
 
-    // export_to_dot(
-    //     "bfs.dot",
-    //     &nodes_bfs,
-    //     &graph_bfs.edge_list,
-    //     0,
-    //     4,
-    //     Some(&bfs_path),
-    // ).unwrap();
+    println!("Путь в ширину {:?}", bfs_path);
+    export_to_dot(
+        "bfs.dot",
+        &nodes,
+        &graph_bfs.edge_list,
+        start,
+        goal,
+        Some(&bfs_path),
+    ).unwrap();
 }

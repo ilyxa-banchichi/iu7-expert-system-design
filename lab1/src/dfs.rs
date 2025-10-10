@@ -28,7 +28,6 @@ impl GraphDFS {
         self.goal = Some(goal);
 
         while self.flag_yes == 1 && self.flag_no == 1 {
-            println!("{:?}", self.opened_peak.last());
             self.sample_search();
             if self.flag_yes == 0 {
                 break;
