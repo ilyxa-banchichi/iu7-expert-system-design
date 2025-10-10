@@ -29,22 +29,15 @@ impl GraphBFS {
         }
     }
 
-    pub fn set_start(&mut self, start: usize) {
-        self.start = Some(start);
-    }
-
-    pub fn set_goal(&mut self, goal: usize) {
-        self.goal = Some(goal);
-    }
-
     pub fn bfs(&mut self, start: usize, goal: usize) -> Vec<usize> {
         self.opened.push_back(start);
-        self.set_start(start);
-        self.set_goal(goal);
+        self.start = Some(start);
+        self.goal = Some(goal);
 
         while self.flag_yes && self.flag_no {
             self.search_descendants();
 
+            // решение найдено
             if !self.flag_yes {
                 if let Some(front) = self.opened.pop_front() {
                     self.closed.insert(front);
