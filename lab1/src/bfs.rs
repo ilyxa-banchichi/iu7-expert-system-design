@@ -48,6 +48,7 @@ impl GraphBFS {
             if let Some(remove_node) = self.opened.pop_front() {
                 if self.child_counter > 0 {
                     self.closed.insert(remove_node);
+                    println!("Закрываем: {:?}", remove_node);
                 } else if self.child_counter == 0 && self.opened.is_empty() {
                     self.flag_no = false;
                     println!("Нет решения");
@@ -66,6 +67,8 @@ impl GraphBFS {
                 self.flag_yes = false;
                 return;
             }
+
+            println!("Открываем потомков: {:?}", current);
 
             for edge in self.edge_list.iter_mut() {
                 if edge.start_node == current && edge.mark == 0 {
@@ -90,6 +93,8 @@ impl GraphBFS {
                     self.child_counter += 1;
                 }
             }
+
+            println!("Список открытых: {:?}", self.opened);
         }
     }
 

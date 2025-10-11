@@ -44,7 +44,7 @@ fn main() {
 
     println!("Путь в глубину {:?}", dfs_path);
     export_to_dot(
-        "dfs.dot",
+        "output/dfs.dot",
         &nodes,
         &graph_dfs.edge_list,
         start,
@@ -63,7 +63,7 @@ fn main() {
 
     println!("Путь в ширину {:?}", bfs_path);
     export_to_dot(
-        "bfs.dot",
+        "output/bfs.dot",
         &nodes,
         &graph_bfs.edge_list,
         start,
