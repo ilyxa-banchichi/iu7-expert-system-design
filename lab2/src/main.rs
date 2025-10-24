@@ -57,12 +57,12 @@ impl GraphSearch {
             }
 
             if !rule.mark && (rule.inputs.len() == count_closed_inputs) {
+                println!("Закрываем правило {}", rule.id);
                 rule.mark = true;
                 self.closed_nodes.push(rule.output.clone());
                 count_closed_rules += 1;
                 if rule.output == self.target {
                     self.flag_y = false;
-                    break;
                 }
             }
         }
@@ -94,9 +94,6 @@ fn main() {
         Node::new(10),
         Node::new(5),
         Node::new(6),
-
-        Node::new(3),
-        Node::new(2),
     ];
 
     let target = Node::new(14);
