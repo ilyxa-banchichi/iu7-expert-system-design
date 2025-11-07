@@ -34,7 +34,6 @@ pub struct Rule {
     pub id: i32,
     pub inputs: Vec<Node>,
     pub output: Node,
-    pub count: i32,
     pub mark: i32
 }
 
@@ -44,7 +43,6 @@ impl Rule {
             id,
             inputs,
             output,
-            count: 0,
             mark: 0,
         }
     }

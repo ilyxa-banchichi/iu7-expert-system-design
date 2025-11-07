@@ -49,28 +49,20 @@ impl GraphSearch {
         }
     }
 
-    /* возвращает
-        1, если нашли правило
-        0, если нет */
     pub fn child_search(&mut self) -> bool {
-println!("Открытые вершины {}", self.open_nodes.iter().map(|n| n.to_string()).collect::<Vec<_>>().join(", "));
-println!("Закрытые вершины {}", self.closed_nodes.iter().map(|n| n.to_string()).collect::<Vec<_>>().join(", "));
+        println!("Открытые вершины {}", self.open_nodes.iter().map(|n| n.to_string()).collect::<Vec<_>>().join(", "));
+        println!("Закрытые вершины {}", self.closed_nodes.iter().map(|n| n.to_string()).collect::<Vec<_>>().join(", "));
         let mut rule_index = 0;
         for rule in &mut self.rules {
-            /* если выходная вершина совпадает с подцелью, т.е. раскрывает эту вершину и метка правила == 0 */
             if rule.output == *self.open_nodes.last().unwrap() && rule.mark == 0 {
                 rule.mark = 1;
-                /* номер правила пишем в голову стека открытых правил */
                 self.open_rules.push(rule_index);
                 println!("\tОткрыли правило {}", rule.id);
 
                 let mut counter = 0;
-                // определяем какие вершины выбранного правила не входят в закрытые
                 for node in &mut rule.inputs {
-                    // если вершины в списке доказанных выставляем флаг
                     if self.closed_nodes.contains(node) {
                         node.flag = true;
-                    // определяем какие вершины выбранного правила не входят в закрытые
                     } else if !node.flag {
                         counter += 1;
                         self.open_nodes.push(node.clone());
@@ -89,20 +81,18 @@ println!("Закрытые вершины {}", self.closed_nodes.iter().map(|n| 
         return false;
     }
 
-        /* алгоритм разметки */
     pub fn markup(&mut self) {
-println!("\tРазметка");
+        println!("\tРазметка");
         while self.flag_y {
-            /* проверить, выполняется ли покрытие входных вершин правила из головы стека закрытыми */
             let current_rule = *self.open_rules.last().unwrap();
             let current_nodes = &self.rules[current_rule].inputs;
-println!("\t\t{}", self.rules[current_rule].id);
+            println!("\t\t{}", self.rules[current_rule].id);
             let mut flag = true;
             for node in current_nodes {
                 let found_result = self.closed_nodes.contains(&node);
                 flag &= found_result;
                 if !found_result {
-println!("\t\tЕщё не доказана вершина {}", node);
+                    println!("\t\tЕщё не доказана вершина {}", node);
                 }
             }
 
@@ -111,10 +101,8 @@ println!("\t\tЕщё не доказана вершина {}", node);
                     self.flag_y = false;
                 }
 
-                // ставим флаг, что правило доказана
                 self.rules[current_rule].mark = 1;
 
-                // удаляем из головы открытых вершин
                 self.open_rules.pop();
                 self.closed_rules.push(current_rule);
                 self.closed_nodes.push(self.open_nodes.pop().unwrap());
@@ -133,7 +121,6 @@ println!("\t\tЕщё не доказана вершина {}", node);
             if let Some(pos) = self.open_nodes.iter().position(|n| n == node) {
                 let node = self.open_nodes.remove(pos);
 
-                // Если вершина не доказана и ещё не была запрещена
                 if !node.flag && !flag {
                     self.forbidden_nodes.push(node);
                     flag = true;
@@ -141,15 +128,10 @@ println!("\t\tЕщё не доказана вершина {}", node);
             }
         }
 
-println!("\tЗапретили правило {}", self.rules[current_rule].id);
+        println!("\tЗапретили правило {}", self.rules[current_rule].id);
 
-        // Помечаем правило как запрещённое
         self.rules[current_rule].mark = -1;
-
-        // Перемещаем правило в список запрещённых
         self.forbidden_rules.push(current_rule);
-
-        // Удаляем его из стека открытых правил
         self.open_rules.pop();
     }
 
