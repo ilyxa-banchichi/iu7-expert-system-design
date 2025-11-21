@@ -63,8 +63,8 @@ impl Unification {
                     if a.sign != b.sign {
                         if let Some(sub) = Self::unify_atoms(a, b) {
                             unufy_has_done = true;
-                            println!("\tRight {}", right);
-                            println!("\t\tUnify atoms {} {}", a, b);
+                            println!("\tПравый {}", right);
+                            println!("\t\tКонтрарная пара {} {}", a, b);
 
                             let mut new_res = Vec::new();
                             for k in 0..result.len() {
@@ -78,7 +78,7 @@ impl Unification {
                                 global_subst.insert(k.clone(), v.clone());
                             }
 
-                            print!("\t\tResult ",);
+                            print!("\t\tРезольвента ",);
                             for atom in result.iter_mut() {
                                 for t in atom.args.iter_mut() {
                                     if let Some(s) = global_subst.get(&t.name) {
@@ -121,11 +121,11 @@ fn resolve(mut current: Disjunct, knowledge: &[Disjunct], limit: usize) -> Disju
 
     loop {
         let mut changed = false;
-        println!("\nIter {}, Left: {}", limit - counter + 1, current);
+        println!("\n№ {}, Левый: {}", limit - counter + 1, current);
 
         for rule in knowledge {
             if counter == 0 {
-                println!("Tries out");
+                println!("Попытки закончились");
                 return current;
             }
 
@@ -145,7 +145,17 @@ fn resolve(mut current: Disjunct, knowledge: &[Disjunct], limit: usize) -> Disju
 }
 
 fn knowledge() -> Vec<Disjunct> {
-    vec![Disjunct::parse("P(A)"), Disjunct::parse("~P(x) | Q(x)")]
+    vec![
+        Disjunct::parse("~P1(y1) v ~P2(x1, y1) v ~L(z1, x1)"), // 3
+        Disjunct::parse("~P1(y3) v L(DT, y3)"),                // 4
+        Disjunct::parse("P2(DT, BT) v P2(CT, BT)"),            // 5
+        // Disjunct::parse("P3(BT)"),            // 6
+        Disjunct::parse("~P3(x2) v P1(x2)"),     // 7
+        Disjunct::parse("~P4(x3) v P3(x3)"),     // 8
+        Disjunct::parse("~P4(x3) v P2(x2, x3)"), // 9
+        Disjunct::parse("P4(RT)"),               // 10
+        Disjunct::parse("~P2(CT, BT)"),          // 11
+    ]
 }
 
 fn main() {
@@ -156,11 +166,11 @@ fn main() {
         println!("{}", d);
     }
 
-    let goal = Disjunct::parse("~Q(A)");
+    let goal = Disjunct::parse("P3(BT)");
 
     println!("\nResolving: {}\n", goal);
 
-    let result = resolve(goal, &kb, 10);
+    let result = resolve(goal, &kb, 1000);
 
     println!("\nRESULT = {}", result);
 }

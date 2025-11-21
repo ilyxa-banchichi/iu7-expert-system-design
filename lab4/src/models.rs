@@ -83,7 +83,7 @@ impl Disjunct {
     }
 
     pub fn parse(exp: &str) -> Self {
-        let parts = exp.split('|');
+        let parts = exp.split('v');
         let mut atoms = Vec::new();
 
         for part in parts {
