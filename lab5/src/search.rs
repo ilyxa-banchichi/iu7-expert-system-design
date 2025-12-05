@@ -35,6 +35,7 @@ impl Search {
     }
 
     pub fn search(&mut self) {
+        let mut step_counter = 0;
         while self.flag_y && self.flag_n {
             let mut counter = 0;
             for (rule_idx, rule) in &mut self.rules.iter_mut().enumerate() {
@@ -51,8 +52,10 @@ impl Search {
                     continue;
                 }
 
+                step_counter += 1;
                 println!(
-                    "_____________________________________________\nСтэк: {}",
+                    "Шаг {}_____________________________________________\nСтэк: {}",
+                    step_counter,
                     self.open_nodes_stack
                         .iter()
                         .map(|arg| self.nodes[*arg].to_string())
@@ -74,7 +77,7 @@ impl Search {
                 );
 
                 for (key, value) in &subst.unwrap() {
-                    if key.value != value.value {
+                    if key.name != value.name {
                         println!("\t\tПодстановка \"{}\" в \"{}\"", value, key);
                     }
                     Self::substitution(&mut self.nodes[rule.final_node], key, value);
@@ -100,7 +103,7 @@ impl Search {
                         temp += 1;
                         println!("\tВершина {} доказана", self.nodes[*inpt_idx]);
                         for (key, value) in &subst2.unwrap() {
-                            if key.value != value.value {
+                            if key.name != value.name {
                                 println!("\t\tПодстановка \"{}\" в \"{}\"", value, key);
                             }
                             Self::substitution(&mut self.nodes[rule.final_node], key, value);
@@ -140,7 +143,7 @@ impl Search {
             }
 
             if !self.flag_y {
-                println!("Рещения найдено");
+                println!("Рещение найдено");
             }
         }
     }
