@@ -130,7 +130,7 @@ fn resolve(mut current: Disjunct, knowledge: &[Disjunct], limit: usize) -> Disju
             }
 
             if let Some((next, subs)) = Unification::unify_disjunct(&current, rule) {
-                // println!("\n{} ~~ {} => {:?}", current, rule, subs);
+                println!("\n{} ~~ {} => {:?}", current, rule, subs);
                 current = next;
                 changed = true;
                 counter -= 1;
@@ -149,12 +149,12 @@ fn knowledge() -> Vec<Disjunct> {
         Disjunct::parse("~P1(y1) v ~P2(x1, y1) v ~L(z1, x1)"), // 3
         Disjunct::parse("~P1(y3) v L(DT, y3)"),                // 4
         Disjunct::parse("P2(DT, BT) v P2(CT, BT)"),            // 5
-        // Disjunct::parse("P3(BT)"),            // 6
-        Disjunct::parse("~P3(x2) v P1(x2)"),     // 7
-        Disjunct::parse("~P4(x3) v P3(x3)"),     // 8
-        Disjunct::parse("~P4(x3) v P2(x2, x3)"), // 9
-        Disjunct::parse("P4(RT)"),               // 10
-        Disjunct::parse("~P2(CT, BT)"),          // 11
+        Disjunct::parse("P3(BT)"),                             // 6
+        Disjunct::parse("~P3(x2) v P1(x2)"),                   // 7
+        Disjunct::parse("~P4(x3) v P3(x3)"),                   // 8
+        Disjunct::parse("~P4(x3) v P2(x2, x3)"),               // 9
+        Disjunct::parse("P4(RT)"),                             // 10
+        Disjunct::parse("~P2(CT, BT)"),                        // 11
     ]
 }
 
