@@ -4,16 +4,11 @@ use std::fmt;
 pub struct Node {
     pub name: String,
     pub args: Vec<Variable>,
-    pub flag: i32,
 }
 
 impl Node {
     pub fn new(name: String, args: Vec<Variable>) -> Self {
-        Self {
-            name,
-            args,
-            flag: 0,
-        }
+        Self { name, args }
     }
 }
 

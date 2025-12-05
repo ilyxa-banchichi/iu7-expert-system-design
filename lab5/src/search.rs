@@ -9,7 +9,6 @@ pub struct Search {
     pub closed_nodes: Vec<usize>,
     pub closed_edges: Vec<usize>,
     pub open_nodes_stack: Vec<usize>,
-    pub open_edges_stack: Vec<usize>,
 
     pub target: usize,
     pub flag_y: bool,
@@ -28,7 +27,6 @@ impl Search {
             nodes,
             closed_nodes,
             closed_edges: Vec::new(),
-            open_edges_stack: Vec::new(),
             open_nodes_stack: vec![target],
             target,
             flag_y: true,
