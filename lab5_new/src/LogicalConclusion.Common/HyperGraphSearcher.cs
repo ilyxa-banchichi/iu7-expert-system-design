@@ -1,47 +1,45 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using LogicalConclusion.Common.Models;
 
 namespace LogicalConclusion.Common;
 
 public class HyperGraphSearcher
 {
-    private Dictionary<int, Rule> Rules;
     public Table Table { get; private set; } = new();
+    
+    private readonly List<int> _provenRules = [];
+    private readonly List<Atom> _usedAtoms = [];
+    private readonly Dictionary<int, Rule> _rules;
 
-    private List<Atom> ProvenAtoms = new();
-    private List<int> ProvenRules = new();
-    private List<Atom> OpenedAtoms = new();
-    private List<Atom> UsedAtoms = new();
+    private List<Atom> _provenAtoms = [];
+    private List<Atom> _openedAtoms = [];
 
-    private bool Found = false;
+    private bool _found = false;
 
     public HyperGraphSearcher(Dictionary<int, Rule> rules)
     {
-        Rules = rules;
+        _rules = rules;
     }
 
     public (bool found, List<Atom> newAtoms, List<int> rules)? SearchFromTarget(
         List<Atom> inputAtoms, Atom target)
     {
         Table = new Table();
-        ProvenAtoms = new List<Atom>(inputAtoms);
-        OpenedAtoms = new List<Atom> { target };
-        UsedAtoms.Clear();
-        Found = false;
+        _provenAtoms = new List<Atom>(inputAtoms);
+        _openedAtoms = [target];
+        _usedAtoms.Clear();
+        _found = false;
 
         Console.WriteLine($"Начинаем поиск доказательства для {target}");
 
-        Atom current = OpenedAtoms[0];
+        Atom current = _openedAtoms[0];
 
-        while (!Found && OpenedAtoms.Any())
+        while (!_found && _openedAtoms.Any() && current != null)
         {
             Console.WriteLine($"\nТекущая подцель: {current}");
 
             // ПРОВЕРКА 1: Уже доказан? (используем таблицу подстановок)
             var currentSub = current.CopyWithSubstitutions(Table);
-            foreach (var proven in ProvenAtoms)
+            foreach (var proven in _provenAtoms)
             {
                 var temp = new Table();
                 temp.Reset(Table);
@@ -51,27 +49,15 @@ public class HyperGraphSearcher
                     Console.WriteLine($"Подцель {current} уже доказана как {proven}");
                     // Применяем подстановки, если нашли совпадение
                     Table = temp;
-                    OpenedAtoms.Remove(current);
                     // Удаляем из открытых
-                    current = OpenedAtoms.FirstOrDefault();
-
-                    // Переходим к следующей
-                    // if (OpenedAtoms.Count > 0)
-                    // {
-                    //     current = OpenedAtoms[0];
-                    //     // Ищем узел в дереве
-                    //     for node in :
-                    //     if (node['type'] == 'subgoal' and
-                    //     str(node['content']) == str(current)):
-                    //     current_node_id = node['id']
-                    //     break
-                    // }
+                    _openedAtoms.Remove(current);
+                    current = _openedAtoms.FirstOrDefault();
                 }
             }
 
             // Проходимся по всем правилам
             bool applied = false;
-            foreach (var (num, rule) in Rules)
+            foreach (var (num, rule) in _rules)
             {
                 var temp = new Table();
                 temp.Reset(Table);
@@ -103,7 +89,7 @@ public class HyperGraphSearcher
                     bool proven = false;
 
                     // ПРОВЕРКА 2: Уже доказан этот атом?
-                    foreach (var fact in ProvenAtoms)
+                    foreach (var fact in _provenAtoms)
                     {
                         var temp2 = new Table();
                         temp2.Reset(Table);
@@ -126,20 +112,20 @@ public class HyperGraphSearcher
                     if (!proven)
                     {
                         // ПРОВЕРКА 3: Уже проверяли этот атом? (предотвращение циклов)
-                        if (UsedAtoms.Any(a => a.ToString() == atom.ToString()))
+                        if (_usedAtoms.Any(a => a.ToString() == atom.ToString()))
                         {
                             Console.WriteLine($"Атом {atom} уже был использован, пропускаем");
                             continue;
                         }
 
                         // Добавляем в used_atoms
-                        UsedAtoms.Add(atom);
+                        _usedAtoms.Add(atom);
 
                         Console.WriteLine($"Атом {atomSub} не найден в фактах, добавляем как подцель");
                         allProven = false;
                         
                         // Важно: добавляем node_with_subs (с подстановками) а не оригинал
-                        OpenedAtoms.Insert(0, atomSub);
+                        _openedAtoms.Insert(0, atomSub);
                         
                         // Меняем текущую подцель
                         current = atomSub;
@@ -157,26 +143,26 @@ public class HyperGraphSearcher
 
                     Console.WriteLine($"Выводим новый факт: {provenAtom}");
                     
-                    ProvenAtoms.Add(provenAtom);
-                    ProvenRules.Add(num);
-                    OpenedAtoms.Remove(current);
+                    _provenAtoms.Add(provenAtom);
+                    _provenRules.Add(num);
+                    _openedAtoms.Remove(current);
 
                     // Проверяем, достигли ли цели (с учетом подстановок)
-                    foreach (var p in ProvenAtoms)
+                    foreach (var p in _provenAtoms)
                     {
                         var tempCheck = new Table();
                         tempCheck.Reset(Table);
                         if (Unifier.Unification(tempCheck, target, p))
                         {
                             Console.WriteLine($"ЦЕЛЬ {target} ДОСТИГНУТА!");
-                            Found = true;
+                            _found = true;
                             break;
                         }
                     }
                     
                     // Берем следующую подцель если есть
-                    if (OpenedAtoms.Count > 0 && !Found)
-                        current = OpenedAtoms[0];
+                    if (_openedAtoms.Count > 0 && !_found)
+                        current = _openedAtoms[0];
                 }
 
                 break;
@@ -184,18 +170,18 @@ public class HyperGraphSearcher
 
             if (!applied)
             {
-                UsedAtoms.Add(current);
-                OpenedAtoms.Remove(current);
-                current = OpenedAtoms.FirstOrDefault();
+                _usedAtoms.Add(current);
+                _openedAtoms.Remove(current);
+                current = _openedAtoms.FirstOrDefault();
             }
         }
 
-        if (!Found) return null;
+        if (!_found) return null;
 
-        var newAtoms = ProvenAtoms
-            .Where(a => !inputAtoms.Any(i => i.ToString() == a.ToString()))
+        var newAtoms = _provenAtoms
+            .Where(a => inputAtoms.All(i => i.ToString() != a.ToString()))
             .ToList();
 
-        return (true, newAtoms, ProvenRules);
+        return (true, newAtoms, _provenRules);
     }
 }

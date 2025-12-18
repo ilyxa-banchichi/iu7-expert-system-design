@@ -67,7 +67,7 @@ internal static class Program
 
         var searcher = new HyperGraphSearcher(rules);
         var result = searcher.SearchFromTarget(given, target);
-
+        
         if (result.HasValue)
         {
             Console.WriteLine("\nРЕШЕНИЕ НАЙДЕНО");

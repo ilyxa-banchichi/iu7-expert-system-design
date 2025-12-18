@@ -4,8 +4,6 @@ public class Atom
 {
     public string Name { get; }
     public List<Term> Terminals { get; }
-    public string Id { get; } = Guid.NewGuid().ToString()[..8];
-    public bool Proven { get; set; } = false;
 
     public Atom(string name, IEnumerable<Term> terminals)
     {
@@ -19,21 +17,14 @@ public class Atom
 
         foreach (var term in Terminals)
         {
-            if (term is Variable v && table.Variables.ContainsKey(v.Name))
+            if (term is Variable v && table.Variables.TryGetValue(v.Name, out var value))
             {
-                var value = table.Variables[v.Name];
-
                 if (value is string s)
                 {
-                    if (table.Variables.ContainsKey(s))
-                    {
-                        var v2 = table.Variables[s];
+                    if (table.Variables.TryGetValue(s, out var v2))
                         newTerms.Add(v2 is string ? new Variable(s) : (Term)v2);
-                    }
                     else
-                    {
                         newTerms.Add(new Variable(s));
-                    }
                 }
                 else
                 {

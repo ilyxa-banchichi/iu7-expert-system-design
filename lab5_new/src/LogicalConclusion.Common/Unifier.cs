@@ -36,11 +36,11 @@ public static class Unifier
                     {
                         table.Variables[v1.Name] = table.Variables[v2.Name];
                     }
-                    else if (!table.Variables.ContainsKey(v2.Name))
+                    else if (!table.Variables.TryGetValue(v2.Name, out var variable))
                     {
                         table.Variables[v2.Name] = table.Variables[v1.Name];
                     }
-                    else if (!Equals(table.Variables[v1.Name], table.Variables[v2.Name]))
+                    else if (!Equals(table.Variables[v1.Name], variable))
                     {
                         table.Reset(original);
                         return false;
@@ -48,10 +48,7 @@ public static class Unifier
                 }
                 else
                 {
-                    if (!table.Variables.ContainsKey(v1.Name))
-                    {
-                        table.Variables[v1.Name] = t2;
-                    }
+                    table.Variables.TryAdd(v1.Name, t2);
 
                     if (table.Variables[v1.Name] is string k)
                     {
@@ -65,10 +62,7 @@ public static class Unifier
                 if (t2.IsVariable)
                 {
                     var v2 = (Variable)t2;
-                    if (!table.Variables.ContainsKey(v2.Name))
-                    {
-                        table.Variables[v2.Name] = t1;
-                    }
+                    table.Variables.TryAdd(v2.Name, t1);
 
                     if (table.Variables[v2.Name] is string k)
                     {
