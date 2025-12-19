@@ -11,6 +11,13 @@ public class Table
         Variables = new Dictionary<string, object>(other.Variables);
     }
 
+    public Table Clone()
+    {
+        var table = new Table();
+        table.Reset(this);
+        return table;
+    }
+
     public override string ToString()
     {
         var sb = new StringBuilder();

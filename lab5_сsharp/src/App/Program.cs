@@ -53,33 +53,42 @@ internal static class Program
             new Atom("E", [cN, cA1])
         };
 
-        Console.WriteLine("=== БАЗА ПРАВИЛ ===");
-        foreach (var (num, rule) in rules)
-            Console.WriteLine($"Правило {num}: {rule}");
-
-        Console.WriteLine("ЦЕЛЬ ДОКАЗАТЕЛЬСТВА:");
-        Console.WriteLine($"\t{target}");
-        Console.WriteLine("ИСХОДНЫЕ ФАКТЫ:");
-        foreach (var atom in given)
-            Console.WriteLine($"{atom}");
-
-        Console.WriteLine("================");
-
         var searcher = new HyperGraphSearcher(rules);
         var result = searcher.SearchFromTarget(given, target);
-        
-        if (result.HasValue)
+        if (result != null && result.Found)
         {
-            Console.WriteLine("\nРЕШЕНИЕ НАЙДЕНО");
-            foreach (var a in result.Value.newAtoms)
-                Console.WriteLine(a);
-
-            Console.WriteLine("Правила: " + string.Join(", ", result.Value.rules));
+            Console.WriteLine("\nРешение найдено");
+            Console.WriteLine("\tДоказанные атомы: ");
+            foreach (var a in result.NewAtoms)
+                Console.WriteLine($"\t\t{a.Substitutions(searcher.Table)}");
+        
+            Console.WriteLine("\tПравила: ");
+            foreach (var ruleIdx in result.Rules)
+            {
+                var rule = rules[ruleIdx];
+                Console.WriteLine($"\t\t{ruleIdx}. {rule.ToStringWithSubstitutions(searcher.Table)}");
+            }
         }
         else
         {
-            Console.WriteLine("\nРЕШЕНИЕ НЕ НАЙДЕНО");
+            Console.WriteLine("\nРешение не найдено");
         }
+        
+        // var searcher = new ForwardChaining(rules);
+        // var result = searcher.Prove(given, target);
+        //
+        // if (result)
+        // {
+        //     Console.WriteLine("\nРЕШЕНИЕ НАЙДЕНО");
+        //     foreach (var a in result.NewAtoms)
+        //         Console.WriteLine(a);
+        //     
+        //     Console.WriteLine("Правила: " + string.Join(", ", result.Rules));
+        // }
+        // else
+        // {
+        //     Console.WriteLine("\nРЕШЕНИЕ НЕ НАЙДЕНО");
+        // }
 
         Console.WriteLine("\nТаблица подстановок:");
         Console.WriteLine(searcher.Table);

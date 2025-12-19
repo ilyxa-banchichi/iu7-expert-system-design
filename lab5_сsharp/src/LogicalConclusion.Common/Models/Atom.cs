@@ -11,7 +11,7 @@ public class Atom
         Terminals = terminals.ToList();
     }
 
-    public Atom CopyWithSubstitutions(Table table)
+    public Atom Substitutions(Table table)
     {
         var newTerms = new List<Term>();
 
